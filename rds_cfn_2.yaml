@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates a simple RDS Instance and associated resources
+
+Resources:
+  rDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: "osutest"
+      Engine: "postgres"
+      MasterUsername: "pocsad2"
+      DBInstanceClass: "db.t2.micro"
+      AllocatedStorage: "5"
+      MasterUserPassword: "TestPass_123"
+

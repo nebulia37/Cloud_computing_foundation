@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates a simple RDS Instance and associated resources
+
+Parameters:
+  pDatabaseName:
+    Type: String
+    Description: Name of Database
+  pEngine:
+    Type: String
+    Description: Engine for database
+    AllowedValues:
+      - mysql
+      - postgres
+  pMasterUserName:
+    Type: String
+    Description: Master Username
+  pMasterUserPassword:
+    Type: String
+    Description: Master User Password
+    NoEcho: True
+  pDbClass:
+    Type: String
+    Description: Database Instance Class
+    AllowedValues:
+      - db.t2.micro
+  pStorageSize:
+    Type: String
+    Description: Allocated Storage Size
+    Default: '5'
+
+Resources:
+  rDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref pDatabaseName
+      Engine: !Ref pEngine
+      MasterUsername: !Ref pMasterUserName
+      DBInstanceClass: !Ref pDbClass
+      AllocatedStorage: !Ref pStorageSize
+      MasterUserPassword: !Ref pMasterUserPassword
+

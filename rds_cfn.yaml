@@ -1,0 +1,7 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates a simple RDS Instance and associated resources
+
+Resources:
+  rDBInstance:
+    Type: AWS::RDS::DBInstance
+

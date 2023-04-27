@@ -1,0 +1,7 @@
+Everything is located at:
+
+https://github.com/frayer/DockerKubesDojo-lite
+
+Tools to install ahead of time are
+Git Client
+Docker

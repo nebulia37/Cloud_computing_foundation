@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates a simple RDS Instance and associated resources
+
+Parameters:
+  pDatabaseName:
+    Type: String
+    Description: Name of Database
+  pEngine:
+    Type: String
+    Description: Engine for database
+    AllowedValues:
+      - mysql
+      - postgres
+  pMasterUserName:
+    Type: String
+    Description: Master Username
+  pMasterUserPassword:
+    Type: String
+    Description: Master User Password
+    NoEcho: True
+  pDbClass:
+    Type: String
+    Description: Database Instance Class
+    AllowedValues:
+      - db.t2.micro
+  pStorageSize:
+    Type: String
+    Description: Allocated Storage Size
+    Default: '5'
+
+Resources:
+  rDBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: !Ref pDatabaseName
+      Engine: !Ref pEngine
+      MasterUsername: !Ref pMasterUserName
+      DBInstanceClass:
+        Ref: pDbClass
+      DBSecurityGroups:
+        - !Ref rDBSecurityGroup
+      AllocatedStorage: !Ref pStorageSize
+      MasterUserPassword: !Ref pMasterUserPassword
+      StorageEncrypted: True
+  rDBSecurityGroup:
+    Type: AWS::RDS::DBSecurityGroup
+    Properties:
+      DBSecurityGroupIngress:
+        - EC2SecurityGroupName: !Ref rWebServerSecurityGroup
+      GroupDescription: Frontend Access
+  rWebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP access via port 80 and SSH access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+  rMasterUserSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: RdsMasterUserInfo
+      Description: This secret has a hardcoded password in SecretString (use GenerateSecretString instead)
+      SecretString: !Sub '{"username":${pMasterUserName},"password":${pMasterUserPassword}}'
+
+Outputs:
+  oInstanceId:
+    Description: InstanceId of the newly created RDS Instance
+    Value: !Ref rDBInstance
+  oSecretId:
+    Description: Secret id of master user secret
+    Value: !Ref rMasterUserSecret
+
